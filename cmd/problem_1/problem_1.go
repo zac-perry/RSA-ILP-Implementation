@@ -1,47 +1,62 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"math/big"
 	"os"
-	"strconv"
 )
 
-// TODO: Function to find primes
-// 2048 bit primes
-// restriction: p = 2q + 1
-func primes() {}
+func rsa(p *big.Int, q *big.Int, message string) {
+  n := new(big.Int)
+  totient := new(big.Int)
 
-// TODO: RSA
-func rsa(p int, q int, message string) {
-	n := p * q
-	totient := (p - 1) * (q - 1)
+  // n = p * q
+  n.Mul(p, q)
 
-	// e : gcd(e, totient)
+  // totient := (p-1)*(q-1)
+  totient.Mul(p.Sub(p, big.NewInt(1)), q.Sub(q, big.NewInt(1)))
+
+	// e : ensure gcd(e, totient) == 1
+  // TODO: Find a way to generate random number and test gcd until i find
+  // Do this efficiently
+  e := big.NewInt(65537)
+  if gcd(e, totient).Cmp(big.NewInt(1)) == 0 {
+    log.Println("GCD found and E has been found -- ", e)
+  }
 
 	// d : d*e == 1 mod totient
+  // consider the extended euclidean algorithm for this?
+  d := big.NewInt(2)
+  for d.Cmp(totient) == -1 {
+    mul := new(big.Int) 
+    mul.Mul(e, d)
+    if mul.Mod(mul, totient).Cmp(big.NewInt(1)) == 0 {
+      break
+    }
 
-	fmt.Println(n, totient)
+    d.Add(d, big.NewInt(1))
+  }
+
+  log.Println("D FOUND -- ", d)
 }
 
-// TODO: Manual GCD
 // Euclidean Algorithm
 // NOTE: make sure that you pass a decent 'e' value here
-func gcd(e int, totient int) int {
-	remainder := 1
-	gcdVal := 0
+func gcd(e *big.Int, totient *big.Int) *big.Int {
+	gcd := new(big.Int)
 
 	for {
-		remainder = totient % e
-		if remainder == 0 {
-			gcdVal = e
+    remainder := new(big.Int).Mod(totient, e)
+		if remainder.Sign() == 0 {
+			gcd = e
 			break
 		}
 		totient = e
 		e = remainder
 	}
 
-	return gcdVal
+  log.Println("GCD FOUND: ", gcd)
+	return gcd
 }
 
 func main() {
@@ -49,9 +64,12 @@ func main() {
 		log.Fatal("usage: ./bin/problem_1 prime1 prime2 message")
 	}
 
-	// may need to fix ATOI depending on the values passed?
-	p, _ := strconv.Atoi(os.Args[1])
-	q, _ := strconv.Atoi(os.Args[2])
-	fmt.Printf("Finding the GCD for: %d %d\n", p, q)
-	fmt.Printf("GCD: %d\n", gcd(p, q))
+	p, _ := new(big.Int).SetString(os.Args[1], 10)
+	q, _ := new(big.Int).SetString(os.Args[2], 10)
+
+	if p == nil || q == nil {
+    log.Fatal("error: issue decoding input numbers from string to BigInt")
+	}
+
+  rsa(p, q, os.Args[3])
 }
