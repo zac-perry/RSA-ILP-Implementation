@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+// Generates a random prime and checks to ensure that p = 2q + 1 is also prime.
+// ** NOTE: This takes forever to run **
 func generatePrimes(bits int) (*big.Int, *big.Int, error) {
 	random, err := rand.Int(rand.Reader, new(big.Int).Lsh(big.NewInt(1), uint(bits)))
 	if err != nil {
@@ -34,6 +36,7 @@ func generatePrimes(bits int) (*big.Int, *big.Int, error) {
 	return p, q, nil
 }
 
+// Writes the found primes to an output file to save them.
 func writePrimes(p, q *big.Int) error {
 	fileP, err := os.Create("rsa/p.txt")
 	fileQ, err := os.Create("rsa/q.txt")
