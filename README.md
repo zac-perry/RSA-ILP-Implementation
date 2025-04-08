@@ -28,6 +28,10 @@ You may not use any crypto packages or built in gcd() There are great heuristics
 
 ### Implementation Details & How to Run
 TODO
+### How to Run: 
+```
+./bin/problem_1 $(cat input-rsa/p.txt) $(cat input-rsa/q.txt) message 
+```
 
 ## Problem 2: ILP
 The power of ILP (highly highly recommend using python here. If you choose not to you are on your own soldier!)
