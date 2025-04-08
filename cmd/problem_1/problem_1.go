@@ -1,42 +1,40 @@
+/*
+ * Zachary Perry
+ * COSC 581 Assignment 7
+ * 4/10/25
+*/
 package main
 
 import (
 	"log"
 	"math/big"
 	"os"
+  "fmt"
 )
 
-func rsa(p *big.Int, q *big.Int, message string) {
-	n := new(big.Int)
-	totient := new(big.Int)
-
-	// n = p * q
-	n.Mul(p, q)
-
+func rsa(p *big.Int, q *big.Int, message string) (*big.Int, *big.Int, *big.Int, string) {
+  // n = p * q
 	// totient := (p-1)*(q-1)
-	totient.Mul(p.Sub(p, big.NewInt(1)), q.Sub(q, big.NewInt(1)))
+	n := new(big.Int).Mul(p, q)
+	totient := new(big.Int).Mul(p.Sub(p, big.NewInt(1)), q.Sub(q, big.NewInt(1)))
 
 	// e : ensure gcd(e, totient) == 1
 	e := big.NewInt(65537)
-	if gcd(e, totient).Cmp(big.NewInt(1)) == 0 {
-		log.Println("GCD found and E has been found -- ", e)
+	if gcd(e, totient).Cmp(big.NewInt(1)) != 0 {
+    log.Fatal("error (rsa): issue finding e")
 	}
 
 	// d : d*e == 1 mod totient
-	// consider the extended euclidean algorithm for this
 	d := findD(e, totient)
-	log.Println("D FOUND -- ", d)
 
 	// encryption / decryption
 	cipherText := encrypt(message, e, n)
-	log.Println("CIPHER TEXT -- ", cipherText)
-
 	plainText := decrypt(cipherText, d, n)
-	log.Println("plaintext -- ", plainText)
+
+  return e, d, cipherText, plainText
 }
 
-// Euclidean Algorithm
-// NOTE: make sure that you pass a decent 'e' value here
+// Euclidean Algorithm to find GCD
 func gcd(e *big.Int, totient *big.Int) *big.Int {
 	gcd := new(big.Int)
 
@@ -50,11 +48,10 @@ func gcd(e *big.Int, totient *big.Int) *big.Int {
 		e = remainder
 	}
 
-	log.Println("GCD FOUND: ", gcd)
 	return gcd
 }
 
-// Extended Euclidean Algorithm
+// Extended Euclidean Algorithm to find D
 func findD(e, totient *big.Int) *big.Int {
 	// extended gcd.
 	// TODO: refactor so it's less disgusting looking
@@ -108,10 +105,17 @@ func main() {
 
 	p, _ := new(big.Int).SetString(os.Args[1], 10)
 	q, _ := new(big.Int).SetString(os.Args[2], 10)
+  message := os.Args[3]
 
 	if p == nil || q == nil {
 		log.Fatal("error: issue decoding input numbers from string to BigInt")
 	}
 
-	rsa(p, q, os.Args[3])
+  e, d, cipherText, plainText := rsa(p, q, message)
+
+  fmt.Printf(">>> E: %5v\n", e)
+  fmt.Printf(">>> D: %5v\n", d)
+  fmt.Printf(">>> Message: %5s\n", message)
+  fmt.Printf(">>> CipherText: %5v\n", cipherText)
+  fmt.Printf(">>> PlainText: %5s\n", plainText)
 }
