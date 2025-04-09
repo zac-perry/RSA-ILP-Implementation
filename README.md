@@ -60,12 +60,7 @@ Max clique: [0, 1, 2, 3]
 
 ### RSA Notes
 - For the primes: 
-    - Can use one of the popular algorithms or primality testing for this: 
-        - [Sieve of Atkin](https://en.wikipedia.org/wiki/Sieve_of_Atkin)
         - [Miller Rabin Primality Test](https://en.wikipedia.org/wiki/Miller–Rabin_primality_test)
-        - [ ] Link for Extended Euclidean Algo
 
-- rest of the algo is pretty easy.
-    - Just make helpers for e, d, etc. 
-    - Also manually do GCD, don't use any built in things.
-
+- For finding d:
+        - [Extended Euclidean Algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
