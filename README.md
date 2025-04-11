@@ -68,10 +68,16 @@ python3 src/problem_2b.py input/graph.txt
 ```
 
 ### Results: 
-From problem 2, I found that Gurobi was slightly slower than the Bron-Kerbosch algorithm for a graph with 1000 vertices. My runtimes for both were as follows: 
+For problem 2, I found that on graphs of 1000 vertices, Bron-Kerbosch was often faster at finding the max clique than using Gurobi to solve it as an ILP problem was. I ran the programs on multiple different input graphs, all of which had 1000 vertices and were generated with an edge probability of 0.001. I found the average runtime results below: 
 ```
 Bron-Kerbosch: 0.00111 seconds
 
 Gurobi: 0.88 seconds
 ```
 
+I also tested each part on different graphs of 1000 vertices that were generated with an edge probability of 0.01 and found similar average results. The difference here is that Gurobi was much closer to the runtime of the Bron-Kerbosch Algorithm: 
+```
+Bron-Kerbosch: 0.00111 seconds
+
+Gurobi: 0.02 seconds
+```

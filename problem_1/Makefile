@@ -13,6 +13,7 @@ vet: fmt
 
 build: vet
 	@go build -o bin/problem_1 cmd/problem_1/problem_1.go
+	@go build -o bin/primes cmd/prime_generator/prime_generator.go
 
 clean:
 	@go clean
