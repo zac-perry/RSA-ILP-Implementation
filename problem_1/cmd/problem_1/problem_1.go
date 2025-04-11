@@ -1,6 +1,6 @@
 /*
  * Zachary Perry
- * COSC 581 Assignment 7
+ * COSC 581 Assignment 7: Part 1
  * 4/10/25
  */
 package main
@@ -12,6 +12,10 @@ import (
 	"os"
 )
 
+/*
+RSA encryption algorithm that uses 2048-bit primes p and q such that: p = 2q + 1
+Follows the general RSA encryption algorithm defined in class.
+*/
 func rsa(p *big.Int, q *big.Int, message string) (*big.Int, *big.Int, *big.Int, string) {
 	// n = p * q
 	// totient := (p-1)*(q-1)
@@ -35,6 +39,7 @@ func rsa(p *big.Int, q *big.Int, message string) (*big.Int, *big.Int, *big.Int, 
 }
 
 // Euclidean Algorithm to find GCD
+// source: https://en.wikipedia.org/wiki/Euclidean_algorithm
 func gcd(e *big.Int, totient *big.Int) *big.Int {
 	gcd := new(big.Int)
 
@@ -51,6 +56,8 @@ func gcd(e *big.Int, totient *big.Int) *big.Int {
 	return gcd
 }
 
+// Extended GCD to assist in finding the value for D.
+// NOTE: this is used for the extended euclidean algorithm.
 func extendedGCD(a, b *big.Int) (*big.Int, *big.Int, *big.Int) {
 	if b.Cmp(big.NewInt(0)) == 0 {
 		return a, big.NewInt(1), big.NewInt(0)
@@ -67,6 +74,7 @@ func extendedGCD(a, b *big.Int) (*big.Int, *big.Int, *big.Int) {
 }
 
 // Extended Euclidean Algorithm to find D
+// source: https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
 func findD(e, totient *big.Int) *big.Int {
 	// mod inverse to get D.
 	gcd, x, _ := extendedGCD(e, totient)
@@ -78,18 +86,18 @@ func findD(e, totient *big.Int) *big.Int {
 	return new(big.Int).Mod(x, totient)
 }
 
+// Encrypt the given message
 func encrypt(message string, e, n *big.Int) *big.Int {
-	// NOTE: need to do exp with all three args here, as doingt the opeartions seperate will cause
-	// Massive loop
+	// NOTE: need to do exp with all three args here, as doing the opeartions seperate will cause a massive loop
 	cipherBytes := new(big.Int).SetBytes([]byte(message))
 	cipherText := new(big.Int).Exp(cipherBytes, e, n)
 
 	return cipherText
 }
 
+// Decrypt the given message
 func decrypt(cipherText, d, n *big.Int) string {
-	// NOTE: need to do exp with all three args here, as doingt the opeartions seperate will cause
-	// Massive loop
+	// NOTE: need to do exp with all three args here, as doing the opeartions seperate will cause a massive loop
 	plainText := new(big.Int).Exp(cipherText, d, n)
 
 	return string(plainText.Bytes())
